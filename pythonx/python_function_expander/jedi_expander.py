@@ -9,9 +9,6 @@ import jedi_vim
 import jedi
 import vim
 
-# IMPORT LOCAL LIBRARIES
-import cache
-
 
 def _get_default(text):
     '''Get the default value of some parameter.

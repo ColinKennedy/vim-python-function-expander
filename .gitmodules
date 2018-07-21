@@ -1,0 +1,3 @@
+[submodule "ultisnipsaide"]
+	path = pythonx/python_function_expander/ultisnipsaide
+	url = https://bitbucket.org/korinkite/ultisnipsaide

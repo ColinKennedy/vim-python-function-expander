@@ -1,8 +1,10 @@
 global !p
-import jedi_expander
+from python_function_expander.ultisnipsaide import ultisnipsaide as aide
+from python_function_expander import jedi_expander
 endglobal
 
 
+context "not aide.is_string() and not aide.is_comment()"
 post_jump "jedi_expander.expand_signatures(snip.cursor, force=True)"
 snippet ( "Expand the current callable object" i
 ($1`!p

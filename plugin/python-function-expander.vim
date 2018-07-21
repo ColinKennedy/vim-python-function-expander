@@ -16,7 +16,7 @@ endif
 
 function! s:ExpandSignatures()
 python << EOF
-import jedi_expander
+from python_function_expander import jedi_expander
 import vim
 
 (row, column) = vim.current.window.cursor
