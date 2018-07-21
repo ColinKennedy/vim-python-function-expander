@@ -5,5 +5,18 @@ endglobal
 
 post_jump "jedi_expander.expand_signatures(snip)"
 snippet ( "Expand the current callable object" i
-(
+($1`!p
+
+(row, _) = vim.current.window.cursor
+current_line = vim.current.buffer[row - 1]
+
+# If the user doesn't have an auto-pair plug-in (like 'jiangmiao/auto-pairs')
+# Then the line they're trying to expand might look like "foo(".
+# Jedi can't parse the signatures this way though. It needs to be "foo()".
+#
+# So we add that the ")", if it's misssing.
+#
+if current_line.strip()[-1] != ')':
+    snip.rv = ')'
+`
 endsnippet

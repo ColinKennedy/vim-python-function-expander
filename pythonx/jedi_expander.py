@@ -4,7 +4,7 @@
 '''A module that generates UltiSnips arguments for callable objects on-the-fly.'''
 
 # IMPORT THIRD-PARTY LIBRARIES
-from UltiSnips.text_objects import _python_code
+from UltiSnips import snippet_manager
 import jedi_vim
 import jedi
 import vim
@@ -168,9 +168,7 @@ def log(func):
     return function
 
 
-# @jedi_vim.catch_and_print_exceptions
-@log
-def expand_signatures():
+def expand_signatures(snip):
     '''Create an anonymous snippet at the current cursor location.
 
     It works like this - type code like you normally do and, when Jedi generates
@@ -211,7 +209,6 @@ def expand_signatures():
     script = jedi_vim.get_script()
     signatures = script.call_signatures()
 
-    raise ValueError(signatures)
     if not signatures:
         return
 
@@ -226,9 +223,10 @@ def expand_signatures():
     lines[-1] = lines[-1].rstrip()
 
     if cache.needs_update(lines):
-        controller = _python_code.SnippetUtilForAction()
         snippet = get_parameter_snippet(
             signatures[0].params,
             lines=lines,
         )
-        controller.expand_anon(snippet)
+        snippet_manager.UltiSnips_Manager.expand_anon(snippet)
+
+    snip.cursor.preserve()
