@@ -207,7 +207,42 @@ def get_balanced_parenthesis():
     return ''
 
 
-def expand_signatures(cursor=None, force=False):
+# Note: This is a copy/paste of jedi_vim.clear_call_signatures. The only
+#       difference is that we modify the buffer using snip.buffer and snip.cursor,
+#       instead of vim.current.buffer and vim.cursor. This is important because
+#       UltiSnips requires us to make modifications to the current buffer through
+#       `snip`, otherwise it will error
+#
+# @jedi_vim.catch_and_print_exceptions
+def clear_call_signatures(snip):
+    '''Clear the current buffer of any Jedi-completion menus.'''
+    import re
+
+    # Check if using command line call signatures
+    if int(jedi_vim.vim_eval("g:jedi#show_call_signatures")) == 2:
+        jedi_vim.vim_command('echo ""')
+        return
+    cursor = snip.cursor
+    e = jedi_vim.vim_eval('g:jedi#call_signature_escape')
+    # We need two turns here to search and replace certain lines:
+    # 1. Search for a line with a call signature and save the appended
+    #    characters
+    # 2. Actually replace the line and redo the status quo.
+    py_regex = r'%sjedi=([0-9]+), (.*?)%s.*?%sjedi%s'.replace(
+        '%s', re.escape(e))
+    for i, line in enumerate(snip.buffer):
+        match = re.search(py_regex, line)
+        if match is not None:
+            # Some signs were added to minimize syntax changes due to call
+            # signatures. We have to remove them again. The number of them is
+            # specified in `match.group(1)`.
+            after = line[match.end() + int(match.group(1)):]
+            line = line[:match.start()] + match.group(2) + after
+            snip.buffer[i] = line
+    snip.cursor = cursor
+
+
+def expand_signatures(snip=None, force=False):
     '''Create an anonymous snippet at the current cursor location.
 
     It works like this - type code like you normally do and, when Jedi generates
@@ -242,13 +277,25 @@ def expand_signatures(cursor=None, force=False):
     with classes, nested functions, etc because it uses Jedi as the back-end.
 
     Args:
-        cursor (:class:`UltiSnips.snippet.definition._base._SnippetUtilCursor`, optional):
+        cursor (:class:`UltiSnips.text_objects._python_code.SnippetUtilForAction`, optional):
             A controller which can get/set the user's position in the current buffer.
         force (:obj:`bool`, optional):
             If True, the signature will expand. If False, then the current line
             will be "checked" to see if it needs expansion. Default is False.
 
     '''
+    if vim.eval('g:jedi#show_call_signatures') == '1':
+        # Jedi literally places text into a line in the current buffer to show
+        # the user any completion options when the mode is set to 1.
+        # If this completion-text is visible in Vim once `expand_signatures`
+        # is called then it would cause `call_signatures` to fail to return []
+        # and then our function will do nothing.
+        #
+        # To avoid that, we call `clear_call_signatures`, beforehand.
+        # Also notice that `jedi_vim.show_call_signatures` does this, too!
+        #
+        clear_call_signatures(snip)
+
     script = jedi_vim.get_script()
     signatures = script.call_signatures()
 
@@ -272,6 +319,6 @@ def expand_signatures(cursor=None, force=False):
         )
         snippet_manager.UltiSnips_Manager.expand_anon(snippet)
 
-        if cursor:
+        if snip:
             # Make sure the user's cursor doesn't move, even after expanding the snippet
-            cursor.preserve()
+            snip.cursor.preserve()
