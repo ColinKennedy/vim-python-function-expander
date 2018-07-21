@@ -154,18 +154,23 @@ def get_parameter_snippet(parameters, lines=None):
     return join_columnwise(arguments) + '${{{tabstop}}}\n'.format(tabstop=tabstop)
 
 
-def log(func):
-    '''Log a function if it fails to execute.'''
-    import traceback
+def get_balanced_parenthesis():
+    '''Recommend the character(s) needed to append to the current line.
 
-    def function(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception:
-            with open('/tmp/foo', 'w') as file_:
-                file_.write(traceback.format_exc())
+    jedi-vim cannot find signatures for a callable object if the line has
+    unbalanced parenthesis. So if the user is on a line that looks like "foo("
+    then it needs to be changed to "foo()" to be parseable.
 
-    return function
+    Returns:
+        str: The characters to balance a string.
+
+    '''
+    (row, _) = vim.current.window.cursor
+    current_line = vim.current.buffer[row - 1]
+
+    if current_line.strip()[-1] != ')':
+        return ')'
+    return ''
 
 
 def expand_signatures(cursor=None):

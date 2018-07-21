@@ -17,6 +17,9 @@ endif
 function! s:ExpandSignatures()
 python << EOF
 import jedi_expander
+import vim
+(row, _) = vim.current.window.cursor
+vim.current.buffer[row - 1] += jedi_expander.get_balanced_parenthesis()
 jedi_expander.expand_signatures()
 EOF
 endfunction
