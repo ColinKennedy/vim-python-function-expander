@@ -28,6 +28,14 @@ def _get_default(text):
     return text[index + 1:]
 
 
+def needs_update(line, column):
+    '''bool: Check if the source-code line is ready to be expanded.'''
+    if len(line) < column:
+        return False
+
+    return line[column - 1] == '(' and line[column] == ')'
+
+
 def join_columnwise(arguments):
     '''Combine the given arguments vertically.
 
@@ -102,6 +110,49 @@ def get_default(lines, name, fallback=''):
     return fallback
 
 
+def get_parameter_details(parameter, lines, name):
+    '''Get the UltiSnips representation of a parameter.
+
+    Note:
+        if the user has `let g:expander_use_local_variables = '0'` then `name`
+        will be returned as the default value.
+
+    Args:
+        parameter (:class:`jedi.api.classes.Definition`):
+            The parameter whose name and default value will be parsed.
+        lines (list[str]):
+            The source code whose last line contains the line that we want to
+            generate the snippet for as well as all lines before it.
+        name (str):
+            The fallback value which will be used if no default value was found
+            or if the user specifies to not use local variables.
+
+    Returns:
+        tuple[str, str]:
+            The UltiSnips-style string and the string's default value, if
+            the parameter was an optional parameter.
+
+    '''
+    def is_optional(description):
+        '''bool: Check if the given description is from an optional parameter.'''
+        return '=' in description
+
+    if not is_optional(parameter.description):
+        return ('${{{tabstop}:{name}}}', '')
+
+    argument = '{name}=${{{tabstop}:{default}}}'
+
+    if vim.eval("get(g:, 'expander_use_local_variables', '1')") == '0':
+        return (argument, _get_default(parameter.description))
+
+    default = get_default(
+        lines,
+        name=name,
+        fallback=_get_default(parameter.description),
+    )
+    return (argument, default)
+
+
 def get_parameter_snippet(parameters, lines=None):
     '''Create a snippet for a Python callable object.
 
@@ -116,10 +167,6 @@ def get_parameter_snippet(parameters, lines=None):
         str: The generated snippet.
 
     '''
-    def is_optional(description):
-        '''bool: Check if the given description is from an optional parameter.'''
-        return '=' in description
-
     if not lines:
         lines = []
 
@@ -128,19 +175,9 @@ def get_parameter_snippet(parameters, lines=None):
 
     for parameter in parameters:
         name = get_description_name(parameter.description)
-        default = ''
-
-        if not is_optional(parameter.description):
-            argument = '${{{tabstop}:{name}}}'
-        else:
-            argument = '{name}=${{{tabstop}:{default}}}'
-            default = get_default(
-                lines,
-                name,
-                fallback=_get_default(parameter.description),
-            )
-
+        argument, default = get_parameter_details(parameter, lines, name)
         arguments.append(argument.format(tabstop=tabstop, name=name, default=default))
+
         tabstop += 1
 
     length = sum([len(argument_) for argument_ in arguments])
@@ -173,7 +210,7 @@ def get_balanced_parenthesis():
     return ''
 
 
-def expand_signatures(cursor=None):
+def expand_signatures(cursor=None, force=False):
     '''Create an anonymous snippet at the current cursor location.
 
     It works like this - type code like you normally do and, when Jedi generates
@@ -210,6 +247,9 @@ def expand_signatures(cursor=None):
     Args:
         cursor (:class:`UltiSnips.snippet.definition._base._SnippetUtilCursor`, optional):
             A controller which can get/set the user's position in the current buffer.
+        force (:obj:`bool`, optional):
+            If True, the signature will expand. If False, then the current line
+            will be "checked" to see if it needs expansion. Default is False.
 
     '''
     script = jedi_vim.get_script()
@@ -218,7 +258,7 @@ def expand_signatures(cursor=None):
     if not signatures:
         return
 
-    (row, _) = vim.current.window.cursor
+    (row, column) = vim.current.window.cursor
     current_row_index = row - 1
     code = script._code_lines
     lines = code[:current_row_index + 1]
@@ -228,13 +268,13 @@ def expand_signatures(cursor=None):
 
     lines[-1] = lines[-1].rstrip()
 
-    if cache.needs_update(lines):
+    if force or needs_update(lines[-1], column):
         snippet = get_parameter_snippet(
             signatures[0].params,
             lines=lines,
         )
         snippet_manager.UltiSnips_Manager.expand_anon(snippet)
 
-    if cursor:
-        # Make sure the user's cursor doesn't move, even after expanding the snippet
-        cursor.preserve()
+        if cursor:
+            # Make sure the user's cursor doesn't move, even after expanding the snippet
+            cursor.preserve()
