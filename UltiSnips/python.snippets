@@ -3,9 +3,7 @@ import jedi_expander
 endglobal
 
 
-snippet zz "Expand the current callable object" i
-`!p
-
-raise ValueError()
-`
+post_jump "jedi_expander.expand_signatures(snip)"
+snippet ( "Expand the current callable object" i
+(
 endsnippet
