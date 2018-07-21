@@ -168,7 +168,7 @@ def log(func):
     return function
 
 
-def expand_signatures(snip):
+def expand_signatures(cursor=None):
     '''Create an anonymous snippet at the current cursor location.
 
     It works like this - type code like you normally do and, when Jedi generates
@@ -202,10 +202,11 @@ def expand_signatures(snip):
     `width` was applied because you defined it earlier. Of course, this works
     with classes, nested functions, etc because it uses Jedi as the back-end.
 
-    '''
-    if int(jedi_vim.vim_eval("has('conceal') && g:jedi#show_call_signatures")) == 0:
-        return
+    Args:
+        cursor (:class:`UltiSnips.snippet.definition._base._SnippetUtilCursor`, optional):
+            A controller which can get/set the user's position in the current buffer.
 
+    '''
     script = jedi_vim.get_script()
     signatures = script.call_signatures()
 
@@ -229,4 +230,6 @@ def expand_signatures(snip):
         )
         snippet_manager.UltiSnips_Manager.expand_anon(snippet)
 
-    snip.cursor.preserve()
+    if cursor:
+        # Make sure the user's cursor doesn't move, even after expanding the snippet
+        cursor.preserve()
