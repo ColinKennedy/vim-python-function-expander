@@ -31,7 +31,7 @@ needs_expansion previous_character == '('
 if needs_expansion:
     vim.current.buffer[row - 1] += jedi_expander.get_balanced_parenthesis()
 
-    # Note: I took this bit from <UltiSnips.snippet.definition._base.SnippetDefinition._eval_code
+    # Note: I took this next section from <UltiSnips.snippet.definition._base.SnippetDefinition._eval_code>
     current = vim.current
 
     _locals = {
