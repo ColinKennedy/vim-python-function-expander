@@ -242,7 +242,7 @@ def clear_call_signatures(snip):
     snip.cursor = cursor
 
 
-def expand_signatures(snip=None, force=False):
+def expand_signatures(snip, force=False):
     '''Create an anonymous snippet at the current cursor location.
 
     It works like this - type code like you normally do and, when Jedi generates
@@ -277,7 +277,7 @@ def expand_signatures(snip=None, force=False):
     with classes, nested functions, etc because it uses Jedi as the back-end.
 
     Args:
-        cursor (:class:`UltiSnips.text_objects._python_code.SnippetUtilForAction`, optional):
+        cursor (:class:`UltiSnips.text_objects._python_code.SnippetUtilForAction`):
             A controller which can get/set the user's position in the current buffer.
         force (:obj:`bool`, optional):
             If True, the signature will expand. If False, then the current line

@@ -17,6 +17,7 @@ endif
 function! s:ExpandSignatures()
 python << EOF
 from python_function_expander import jedi_expander
+import UltiSnips
 import vim
 
 (row, column) = vim.current.window.cursor
@@ -26,9 +27,25 @@ try:
 except IndexError:
     previous_character = ''
 
-if previous_character == '(':
+needs_expansion previous_character == '('
+if needs_expansion:
     vim.current.buffer[row - 1] += jedi_expander.get_balanced_parenthesis()
-    jedi_expander.expand_signatures()
+
+    # Note: I took this bit from <UltiSnips.snippet.definition._base.SnippetDefinition._eval_code
+    current = vim.current
+
+    _locals = {
+        'window': current.window,
+        'buffer': current.buffer,
+        'line': current.window.cursor[0] - 1,
+        'column': current.window.cursor[1] - 1,
+        'cursor': UltiSnips.snippet.definition._base._SnippetUtilCursor(current.window.cursor),
+    }
+
+    snip = UltiSnips.text_objects._python_code.SnippetUtilForAction(_locals)
+
+    # Now actually do the expansion
+    jedi_expander.expand_signatures(snip)
 EOF
 endfunction
 
