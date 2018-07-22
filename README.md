@@ -2,13 +2,15 @@
 
 Leverage the power of the Jedi to write better Python code, faster.
 
+
 ## Usage
 
 Write a function, class, or callable Python object like you normally would.
-Then, once you type "(", press your snippet-expansion key (For example. [TAB])
+Then, after you type "(", press your snippet-expansion key (For example. [TAB])
 and let auto-expander do the work.
 
 https://asciinema.org/a/192301
+
 
 ## Requirements
 
@@ -20,6 +22,7 @@ This plug-in is an integration of two other Vim plug-ins.
 jedi-vim handles parsing the current Python file and UltiSnips is used to
 insert the text directly into Vim.
 
+
 ## Installation
 
 1. First, install UltiSnips and jedi-vim if you have not already.
@@ -27,12 +30,13 @@ insert the text directly into Vim.
 2. Add this repository manually or use your preferred package manager and add
    the following line to your .vimrc.
 
-Example [Using vim-plug](https://github.com/junegunn/vim-plug):
+Example (Using [vim-plug](https://github.com/junegunn/vim-plug)):
 ```
 Plug 'https://bitbucket.org/korinkite/python-function-expander.git'
 ```
 
 3. Then run `:PlugInstall` and restart Vim.
+
 
 ## Configuration Settings
 
