@@ -17,6 +17,7 @@ https://asciinema.org/a/192301
 This plug-in is an integration of two other Vim plug-ins.
 
 [UltiSnips](https://github.com/SirVer/ultisnips)
+
 [jedi-vim](https://github.com/davidhalter/jedi-vim)
 
 jedi-vim handles parsing the current Python file and UltiSnips is used to
@@ -35,7 +36,7 @@ Example (Using [vim-plug](https://github.com/junegunn/vim-plug)):
 Plug 'https://bitbucket.org/korinkite/python-function-expander.git'
 ```
 
-3. Then run `:PlugInstall` and restart Vim.
+Then run `:PlugInstall` and restart Vim.
 
 
 ## Configuration Settings
