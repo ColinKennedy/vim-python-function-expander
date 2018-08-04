@@ -27,7 +27,7 @@ try:
 except IndexError:
     previous_character = ''
 
-needs_expansion previous_character == '('
+needs_expansion = previous_character == '('
 if needs_expansion:
     vim.current.buffer[row - 1] += jedi_expander.get_balanced_parenthesis()
 

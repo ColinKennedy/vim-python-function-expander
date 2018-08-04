@@ -30,7 +30,17 @@ def needs_update(line, column):
     if len(line) < column:
         return False
 
-    return line[column - 1] == '(' and line[column] == ')'
+    try:
+        previous_character = line[column - 1]
+    except IndexError:
+        return False
+
+    try:
+        next_character = line[column]
+    except IndexError:
+        return False
+
+    return previous_character == '(' and next_character == ')'
 
 
 def join_columnwise(arguments):
