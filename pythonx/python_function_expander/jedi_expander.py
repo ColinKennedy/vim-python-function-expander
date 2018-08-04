@@ -164,7 +164,7 @@ def get_parameter_snippet(parameters, lines=None):
     '''Create a snippet for a Python callable object.
 
     Args:
-        parameters (list[]):
+        parameters (list[:class:`jedi.api.classes.Definition`]):
             The parameters which will be converted into an UltiSnips snippet.
         lines (list[str]):
             The source code whose last line contains the line that we want to
