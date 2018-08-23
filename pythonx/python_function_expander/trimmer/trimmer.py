@@ -4,6 +4,7 @@
 '''The main module that trims arguments out of function calls.'''
 
 # IMPORT STANDARD LIBRARIES
+import textwrap
 import re
 
 # IMPORT THIRD-PARTY LIBRARIES
@@ -12,25 +13,24 @@ import jedi
 # IMPORT LOCAL LIBRARIES
 from . import parser
 
-import textwrap
-_FUNCTION_TEMPLATE = textwrap.dedent(
+
+_SINGLE_LINE_TEMPLATE = textwrap.dedent(
     '''
-    (.*)
-    {keyword}\s*=\s*{value}\s*,
-    (?:\s*\#[\w\ \t]+)?  # An optional in-line user comment, if it exists
+    (?:[\ \t]*)
+    {keyword}\s*=\s*{value}\s*,([\ \t]*)?
+    (?:\#[\w\ \t]+)?  # An optional in-line user comment, if it exists
     (\S*)
     (?:\n)?
-    (?:\s\n+(\s*)|(\s*))
     '''
 )
 _FUNCTION_TEMPLATE = textwrap.dedent(
     '''
-    (?:.*)
-    {keyword}\s*=\s*{value}\s*,
-    (?:\s*\#[\w\ \t]+)?  # An optional in-line user comment, if it exists
+    (?:[\ \t]*)
+    {keyword}\s*=\s*{value}\s*,([\ \t]*)?
+    (?:\#[\w\ \t]+)?  # An optional in-line user comment, if it exists
     (\S*)
     (?:\n)?
-    (?:\s)
+    (\s)
     '''
 )
 # _FUNCTION_TEMPLATE = textwrap.dedent(
@@ -116,13 +116,23 @@ def get_trimmed_keywords(code, row, column):
         return ''
 
     for name, value in parser.get_unchanged_keywords(call, script):
-        expression = _FUNCTION_TEMPLATE.format(
-            keyword=name,
-            value=value,
-        )
+        # Our regex from above consumes
+        is_multiline = call.fromlineno != call.tolineno
+        if is_multiline:
+            expression = _FUNCTION_TEMPLATE.format(
+                keyword=name,
+                value=value,
+            )
+        else:
+            expression = _SINGLE_LINE_TEMPLATE.format(
+                keyword=name,
+                value=value,
+            )
+
         expression = re.compile(expression, re.VERBOSE | re.MULTILINE)
 
-        cropped_code = expression.sub(r'\1', cropped_code)
+        cropped_code = expression.sub(r'\1\2', cropped_code)
+
         # cropped_code = expression.sub(replace, cropped_code)
 
     lines = code.split('\n')

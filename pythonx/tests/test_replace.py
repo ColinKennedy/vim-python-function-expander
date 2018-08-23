@@ -32,7 +32,7 @@ class RegexTrim(unittest.TestCase):
 
         # raise ValueError(expected)
         # raise ValueError(code)
-        raise ValueError(output)
+        # raise ValueError(output)
 
         for index, (char1, char2) in enumerate(zip(expected, output)):
             if char1 != char2:
@@ -41,7 +41,7 @@ class RegexTrim(unittest.TestCase):
         # raise ValueError(output)
         self.assertEqual(expected, output)
 
-    def test_single_line(self):
+    def test_single_line_001(self):
         code = textwrap.dedent(
             '''\
             import os
@@ -69,6 +69,36 @@ class RegexTrim(unittest.TestCase):
         )
 
         self._compare(expected, code)
+
+    def test_single_line_002(self):
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            stuff('asfd')
+            foo(bar, |f|izz, thing=None, another=9)
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            stuff('asfd')
+            foo(bar, fizz, another=9)
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
 
     def test_multiline_001(self):
         '''Test to make sure that the a basic trimmer function works.'''
@@ -141,6 +171,45 @@ class RegexTrim(unittest.TestCase):
                         thing='tt'
             )
 
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+    def test_multiline_003(self):
+        '''Test to make sure that the a basic trimmer function works.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            foo(
+                b|a|r,
+                fizz,
+                thing=None,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            foo(
+                bar,
+                fizz,
+                another=9,
+            )
             os.path.join('asdf', 'asdf')
             '''
         )
