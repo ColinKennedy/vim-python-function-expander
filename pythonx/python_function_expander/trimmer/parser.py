@@ -10,7 +10,7 @@ import astroid
 # IMPORT LOCAL LIBRARIES
 # TODO : Make relative
 # from . import common
-import common
+from .. import common
 
 
 class CallVisitor(object):
