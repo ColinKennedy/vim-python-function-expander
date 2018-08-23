@@ -80,6 +80,7 @@ def get_trimmed_keywords(code, row, column):
 
     cropped_code = '\n'.join(code.splitlines()[call.fromlineno - 1:call.tolineno + 1])
 
+    # TODO : Remove this old code, later
     # def _get_code():
     #     return cropped_code
 

@@ -216,14 +216,165 @@ class RegexTrim(unittest.TestCase):
 
         self._compare(expected, code)
 
-    # def test_fringe_001(self):
-    #     '''Replace text even when the cursor is outside of the function.'''
+    def test_fringe_001(self):
+        '''Replace text even when the cursor is outside of the function.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            foo(
+                bar,
+                fizz,
+                thing=None,
+                another=9,
+            |)|
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            foo(
+                bar,
+                fizz,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
 
     # def test_fringe_002(self):
     #     '''Replace text even when the cursor is outside of the function.'''
+    #     code = textwrap.dedent(
+    #         '''\
+    #         import os
 
-    # def test_fringe_003(self):
-    #     '''Replace text even when the cursor is on the edge of a line.'''
+    #         def foo(bar, fizz, thing=None, another=8):
+    #             pass
 
-    # def test_fringe_004(self):
-    #     '''Replace text even when the cursor is in whitespace.'''
+    #         variant = 'asdf'
+    #         foo|(|
+    #             bar,
+    #             fizz,
+    #             thing=None,
+    #             another=9,
+    #         )
+    #         os.path.join('asdf', 'asdf')
+    #         '''
+    #     )
+
+    #     expected = textwrap.dedent(
+    #         '''\
+    #         import os
+
+    #         def foo(bar, fizz, thing=None, another=8):
+    #             pass
+
+    #         variant = 'asdf'
+    #         foo(
+    #             bar,
+    #             fizz,
+    #             another=9,
+    #         )
+    #         os.path.join('asdf', 'asdf')
+    #         '''
+    #     )
+
+    #     self._compare(expected, code)
+
+    def test_fringe_003(self):
+        '''Replace text even when the cursor is on the edge of a line.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            foo(
+                bar,
+                fizz,
+                thing=None|,|
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            foo(
+                bar,
+                fizz,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+
+    def test_fringe_004(self):
+        '''Replace text even when the cursor is in whitespace.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            foo(
+                bar,
+                fizz,
+            | |    thing=None,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            foo(
+                bar,
+                fizz,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+    # def test_no_match_001(self):
+    #     pass
+
+    # def test_no_match_002(self):
+    #     pass
