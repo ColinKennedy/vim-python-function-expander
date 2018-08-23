@@ -44,7 +44,6 @@ def get_trimmed_keywords(code, row, column):
     cropped_code = '\n'.join(code.splitlines()[call.fromlineno - 1:call.tolineno + 1])
 
     for name, value in parser.get_unchanged_keywords(call, script):
-
         expression = _FUNCTION_TEMPLATE.format(
             keyword=name,
             value=value,
@@ -57,79 +56,7 @@ def get_trimmed_keywords(code, row, column):
             re.VERBOSE,
         )
 
-    lines = code.splitlines()
-    lines[call.fromlineno - 1:call.tolineno + 1] = cropped_code.splitlines()
+    lines = code.split('\n')
+    lines[call.fromlineno - 1:call.tolineno + 1] = cropped_code.split('\n')
 
     return ('\n'.join(lines), call)
-
-
-# TODO : Remove test code
-def test():
-    '''Test to make sure that the trimmer function works.'''
-    import textwrap
-    code = textwrap.dedent(
-        '''\
-        import os
-
-        def foo(bar, fizz, thing=None, another=8):
-            pass
-
-        foo(
-            bar,
-            fizz,
-            thing=None,
-            another=9,
-        )
-
-        os.path.join('asdf', 'asdf')
-        '''
-    )
-
-    #code = textwrap.dedent(
-    #    """\
-    #    #!/usr/bin/env python
-    #    # -*- coding: utf-8 -*-
-
-    #    # IMPORT STANDARD LIBRARIES
-    #    import shotgun_api3 as shotgun
-
-
-    #    def main():
-    #        '''Run the main execution of the current script.'''
-    #        sg = shotgun.Shotgun()
-
-    #        sg.find_one(
-    #            entity_type,
-    #            filters,
-    #            fields='asdfsd',
-    #            order=None,
-    #            filter_operator=None,
-    #            retired_only=False,
-    #            include_archived_projects=True,
-    #            additional_filter_presets=None,
-    #        )
-
-
-    #    if __name__ == '__main__':
-    #        main()
-    #    """
-    #)
-
-    lines = code.splitlines()
-    for row in range(len(lines)):
-        for column in range(len(lines[row])):
-            # print('try', row, column)
-            try:
-                output, call = get_trimmed_keywords(code, row, column)
-            except Exception:
-                continue
-
-            if call:
-                print('found')
-            if output != code:
-                print('FOUND', row, column)
-                print(output)
-
-
-if __name__ == '__main__':
-    test()

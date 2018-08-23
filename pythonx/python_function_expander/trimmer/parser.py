@@ -81,15 +81,16 @@ def get_parameter_info(script):
         list[tuple[str, str]]: The keyword name and its default value.
 
     '''
+    # TODO : Update docstring Returns
     # TODO : This needs to be chosen somehow
     signature = script.call_signatures()[0]
 
-    info = []
+    info = dict()
     for parameter in signature.params:
         default = common.get_default(parameter.description)
 
         if default:
-            info.append((str(parameter.name), default))
+            info[str(parameter.name)] = default
 
     return info
 
@@ -109,11 +110,12 @@ def get_parameter_values(node):
         list[tuple[str, str]]: The keywords and their defined default values.
 
     '''
-    items = []
+    # TODO : Update docstring Returns
+    items = dict()
     keywords = node.keywords or []
 
     for child in keywords:
-        items.append((child.arg, child.value.as_string()))
+        items[child.arg] = child.value.as_string()
 
     return items
 
@@ -135,8 +137,12 @@ def get_unchanged_keywords(node, script):
 
     unchanged = []
 
-    for (_, parameter_default), (argument_name, value) in zip(parameters, values):
-        if parameter_default == value:
-            unchanged.append((argument_name, value))
+    if set(parameters.keys()) != set(values.keys()):
+        raise RuntimeError('Parsing node failed. Cannot continue')
+
+    for keyword in parameters.keys():
+        value = values[keyword]
+        if parameters[keyword] == value:
+            unchanged.append((keyword, value))
 
     return unchanged
