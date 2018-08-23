@@ -121,7 +121,7 @@ class RegexTrim(unittest.TestCase):
                 bar,
                     fizz,
                     another=8,
-                        |t|hing='thasdf'
+                        |t|hing='tt'
             )
 
             os.path.join('asdf', 'asdf')
@@ -138,7 +138,7 @@ class RegexTrim(unittest.TestCase):
             foo(
                 bar,
                     fizz,
-                        thing='tt',
+                        thing='tt'
             )
 
             os.path.join('asdf', 'asdf')
