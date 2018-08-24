@@ -11,9 +11,9 @@ import unittest
 from python_function_expander.trimmer import trimmer
 
 
-class RegexTrim(unittest.TestCase):
+class _Common(unittest.TestCase):
 
-    '''A TestCase that checks to make sure unused args are deleted correctly.'''
+    '''A base class that is used to save code across multiple test cases.'''
 
     @staticmethod
     def _acquire_cursor(text):
@@ -64,6 +64,11 @@ class RegexTrim(unittest.TestCase):
 
         # raise ValueError(output)
         self.assertEqual(expected, output)
+
+
+class RegexTrim(_Common):
+
+    '''A TestCase that checks to make sure unused args are deleted correctly.'''
 
     def test_single_line_001(self):
         '''Remove unused arguments even if the cursor isn't directly on one.'''
@@ -535,6 +540,72 @@ class RegexTrim(unittest.TestCase):
             a
             os.path.join('asdf', 'asdf')
             '''
+        )
+
+        self._compare(expected, code)
+
+
+class FailedCases(_Common):
+
+    '''A series of failures that came up in production.'''
+
+    def test_regex_failure_001(self):
+        '''Run a test that was related to a regex parser error.'''
+        code = textwrap.dedent(
+            """
+            #!/usr/bin/env python
+            # -*- coding: utf-8 -*-
+
+            # IMPORT STANDARD LIBRARIES
+            import argparse
+
+
+            def main():
+                '''Run the main execution of the current script.'''
+
+                parser = argparse.ArgumentParser(
+                    prog=None,
+                    usage=None,
+                    description='asdfasdfasfd',
+                    epi|l|og=None,
+                    version='1.0.0',
+                    parents=[],
+                    formatter_class=HelpFormatter,
+                    prefix_chars='asfasdfsdf',
+                    fromfile_prefix_chars=None,
+                    argument_default=None,
+                    conflict_handler='error',
+                    add_help=True,
+                )
+
+
+            if __name__ == '__main__':
+                main()
+            """
+        )
+
+        expected = textwrap.dedent(
+            """
+            #!/usr/bin/env python
+            # -*- coding: utf-8 -*-
+
+            # IMPORT STANDARD LIBRARIES
+            import argparse
+
+
+            def main():
+                '''Run the main execution of the current script.'''
+
+                parser = argparse.ArgumentParser(
+                    description='asdfasdfasfd',
+                    version='1.0.0',
+                    prefix_chars='asfasdfsdf',
+                )
+
+
+            if __name__ == '__main__':
+                main()
+            """
         )
 
         self._compare(expected, code)

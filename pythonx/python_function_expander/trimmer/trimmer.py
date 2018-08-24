@@ -14,6 +14,7 @@ import jedi
 from . import parser
 
 
+# TODO : Combine the common parts of these two templates
 _SINGLE_LINE_TEMPLATE = textwrap.dedent(
     '''
     (?:[\ \t]*)
@@ -33,24 +34,6 @@ _FUNCTION_TEMPLATE = textwrap.dedent(
     (\s)
     '''
 )
-# _FUNCTION_TEMPLATE = textwrap.dedent(
-#     '''
-#     (?:\s*)
-#     {keyword}\s*=\s*{value}\s*,
-#     (?:\s*\#[\w\ \t]+)?  # An optional in-line user comment, if it exists
-#     (\S*)
-#     (\n)?
-#     (?:\s)
-#     '''
-# )
-# _FUNCTION_TEMPLATE = textwrap.dedent(
-#     '''
-#     (.*)
-#     {keyword}\s*=\s*{value}\s*,
-#     (?:\s*\#[\w\ \t]+)?  # An optional in-line user comment, if it exists
-#     (?:\n([\ \t]*))?
-#     '''
-# )
 
 
 def adjust_cursor(code, row, column):
