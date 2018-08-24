@@ -7,7 +7,7 @@
 import vim
 
 # IMPORT LOCAL LIBRARIES
-import trimmer
+from . import trimmer
 
 
 def _to_vim(cursor):

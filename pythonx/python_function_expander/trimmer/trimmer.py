@@ -112,9 +112,9 @@ def get_trimmed_keywords(code, row, column):
 
     #     return ''
 
-    def replace(match):
-        print('t', match.group())
-        return ''
+    # def replace(match):
+    #     print('t', match.group())
+    #     return ''
 
     for name, value in parser.get_unchanged_keywords(call, script):
         # Our regex from above consumes

@@ -333,7 +333,6 @@ class RegexTrim(unittest.TestCase):
 
         self._compare(expected, code)
 
-
     def test_fringe_004(self):
         '''Replace text even when the cursor is in whitespace.'''
         code = textwrap.dedent(

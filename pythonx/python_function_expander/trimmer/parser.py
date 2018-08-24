@@ -131,7 +131,10 @@ def get_parameter_info(script):
 
     '''
     # TODO : This needs to be chosen somehow
-    signature = script.call_signatures()[0]
+    try:
+        signature = script.call_signatures()[0]
+    except IndexError:
+        return dict()
 
     info = dict()
     for parameter in signature.params:
@@ -189,6 +192,9 @@ def get_unchanged_keywords(node, script):
     '''
     parameters = get_parameter_info(script)
     values = get_parameter_values(node)
+
+    if not parameters or not values:
+        return dict()
 
     unchanged = []
 
