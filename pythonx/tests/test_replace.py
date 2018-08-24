@@ -99,6 +99,63 @@ class RegexTrim(unittest.TestCase):
 
         self._compare(expected, code)
 
+    def test_single_line_003(self):
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            stuff('asfd')
+            foo|(|bar, fizz, thing=None, another=9)
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            stuff('asfd')
+            foo(bar, fizz, another=9)
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+    def test_single_line_004(self):
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            stuff('asfd')
+            f|o|o(bar, fizz, thing=None, another=9)
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            stuff('asfd')
+            foo(bar, fizz, another=9)
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
 
     def test_multiline_001(self):
         '''Test to make sure that the a basic trimmer function works.'''
@@ -372,8 +429,85 @@ class RegexTrim(unittest.TestCase):
 
         self._compare(expected, code)
 
+    # TODO : Finish these!
     # def test_no_match_001(self):
-    #     pass
+    #     code = textwrap.dedent(
+    #         '''\
+    #         import os
+
+    #         def foo(bar, fizz, thing=None, another=8):
+    #             pass
+
+    #         variant = 'asdf'
+    #         foo(
+    #             bar,
+    #             fizz,
+    #             thing=None,
+    #             another=9,
+    #         )
+    #         os|.|path.join('asdf', 'asdf')
+    #         '''
+    #     )
+
+    #     expected = textwrap.dedent(
+    #         '''\
+    #         import os
+
+    #         def foo(bar, fizz, thing=None, another=8):
+    #             pass
+
+    #         variant = 'asdf'
+    #         foo(
+    #             bar,
+    #             fizz,
+    #             thing=None,
+    #             another=9,
+    #         )
+    #         os.path.join('asdf', 'asdf')
+    #         '''
+    #     )
+
+    #     self._compare(expected, code)
+
+    # def test_no_match_002(self):
+    #     code = textwrap.dedent(
+    #         '''\
+    #         import os
+
+    #         def foo(bar, fizz, thing=None, another=8):
+    #             pass
+
+    #         variant = 'asdf'
+    #         foo(
+    #             bar,
+    #             fizz,
+    #             thing=None,
+    #             another=9,
+    #         )
+    #         | |
+    #         os.path.join('asdf', 'asdf')
+    #         '''
+    #     )
+
+    #     expected = textwrap.dedent(
+    #         '''\
+    #         import os
+
+    #         def foo(bar, fizz, thing=None, another=8):
+    #             pass
+
+    #         variant = 'asdf'
+    #         foo(
+    #             bar,
+    #             fizz,
+    #             thing=None,
+    #             another=9,
+    #         )
+    #         os.path.join('asdf', 'asdf')
+    #         '''
+    #     )
+
+    #     self._compare(expected, code)
 
     # def test_no_match_002(self):
     #     pass

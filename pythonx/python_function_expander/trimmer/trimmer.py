@@ -53,7 +53,30 @@ _FUNCTION_TEMPLATE = textwrap.dedent(
 # )
 
 
-def get_trimmed_keywords(code, row, column):
+def adjust_cursor(code, node, column):
+    # TODO : Audit if I can replace "split('\n')" with "splitlines()"
+    lines = code.split('\n')
+
+    # fromlineo is 1-based so convert it to 0-based by subtracting 1
+    row = node.fromlineno - 1
+
+    call_line = lines[row]
+    try:
+        column = max((call_line.index('(') + 1, column))
+    except ValueError:
+        # TODO : Make a unittest for this case
+        # If this happens, it's because the user wrote some really weird syntax, like:
+        # >>> foo\
+        # >>> (bar)
+        # TODO : finish this usage case
+        pass
+
+    # Set row back to 1-based
+    row += 1
+    return (row, column)
+
+
+def get_trimmed_keywords(code, row, column, adjust=True):
     '''Delete the keyword(s) that are set to default value.
 
     Args:
@@ -69,6 +92,10 @@ def get_trimmed_keywords(code, row, column):
 
     if not call:
         return (code, None)
+
+    # TODO : Once unittesting is complete, move this logic into vim_trimmer.py instead!!!!
+    if adjust:
+        row, column = adjust_cursor(code, call, column)
 
     # TODO : In the future, remove the `environment` keyword so that Jedi can
     #        run using Python 3.
