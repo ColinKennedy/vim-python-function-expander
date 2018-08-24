@@ -198,11 +198,8 @@ def get_unchanged_keywords(node, script):
 
     unchanged = []
 
-    if set(parameters.keys()) != set(values.keys()):
-        raise RuntimeError('Parsing node failed. Cannot continue')
-
-    for keyword, default in parameters.items():
-        value = values[keyword]
+    for keyword, value in values.items():
+        default = parameters[keyword]
         if default == value:
             unchanged.append((keyword, value))
 
