@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+'''A series of tests to make sure unused args are deleted correctly.'''
+
 # IMPORT STANDARD LIBRARIES
 import textwrap
 import unittest
@@ -10,8 +12,22 @@ from python_function_expander.trimmer import trimmer
 
 
 class RegexTrim(unittest.TestCase):
+
+    '''A TestCase that checks to make sure unused args are deleted correctly.'''
+
     @staticmethod
     def _acquire_cursor(text):
+        '''Get the cursor in some text and remove the cursor marker.
+
+        Args:
+            text (str): The code to find a cursor for.
+
+        Returns:
+            tuple[str, tuple[int, int]]:
+                The modified code, followed by the row and column that the cursor
+                was found in.
+
+        '''
         lines = text.split('\n')
 
         for row, line in enumerate(lines):
@@ -27,6 +43,14 @@ class RegexTrim(unittest.TestCase):
         raise ValueError('No cursor was found.')
 
     def _compare(self, expected, code):
+        '''Check that the given code works the way we expect.
+
+        Args:
+            expected (str): What (ideally) should be the output of `code` after
+                            unused arguments have beem trimmed.
+            code (str): The code to process.
+
+        '''
         (code, (row, column)) = self._acquire_cursor(code)
         output, call = trimmer.get_trimmed_keywords(code, row, column)
 
@@ -42,6 +66,7 @@ class RegexTrim(unittest.TestCase):
         self.assertEqual(expected, output)
 
     def test_single_line_001(self):
+        '''Remove unused arguments even if the cursor isn't directly on one.'''
         code = textwrap.dedent(
             '''\
             import os
@@ -71,6 +96,7 @@ class RegexTrim(unittest.TestCase):
         self._compare(expected, code)
 
     def test_single_line_002(self):
+        '''Remove unused arguments even if the cursor isn't directly on one.'''
         code = textwrap.dedent(
             '''\
             import os
@@ -100,6 +126,7 @@ class RegexTrim(unittest.TestCase):
         self._compare(expected, code)
 
     def test_single_line_003(self):
+        '''Remove unused arguments even when the cursor is on the start of the function.'''
         code = textwrap.dedent(
             '''\
             import os
@@ -129,6 +156,7 @@ class RegexTrim(unittest.TestCase):
         self._compare(expected, code)
 
     def test_single_line_004(self):
+        '''Remove unused arguments even when the cursor is not in the function.'''
         code = textwrap.dedent(
             '''\
             import os
@@ -197,6 +225,7 @@ class RegexTrim(unittest.TestCase):
         self._compare(expected, code)
 
     def test_multiline_002(self):
+        '''Remove unused arguments and preserve the user's whitespace.'''
         code = textwrap.dedent(
             '''\
             import os
@@ -429,85 +458,83 @@ class RegexTrim(unittest.TestCase):
 
         self._compare(expected, code)
 
-    # TODO : Finish these!
-    # def test_no_match_001(self):
-    #     code = textwrap.dedent(
-    #         '''\
-    #         import os
+    def test_no_match_001(self):
+        '''Don't remove arguments if there are none to remove.'''
+        code = textwrap.dedent(
+            '''\
+            import os
 
-    #         def foo(bar, fizz, thing=None, another=8):
-    #             pass
+            def foo(bar, fizz, thing=None, another=8):
+                pass
 
-    #         variant = 'asdf'
-    #         foo(
-    #             bar,
-    #             fizz,
-    #             thing=None,
-    #             another=9,
-    #         )
-    #         os|.|path.join('asdf', 'asdf')
-    #         '''
-    #     )
+            variant = 'asdf'
+            foo(
+                bar,
+                fizz,
+                thing=None,
+                another=9,
+            )
+            os|.|path.join('asdf', 'asdf')
+            '''
+        )
 
-    #     expected = textwrap.dedent(
-    #         '''\
-    #         import os
+        expected = textwrap.dedent(
+            '''\
+            import os
 
-    #         def foo(bar, fizz, thing=None, another=8):
-    #             pass
+            def foo(bar, fizz, thing=None, another=8):
+                pass
 
-    #         variant = 'asdf'
-    #         foo(
-    #             bar,
-    #             fizz,
-    #             thing=None,
-    #             another=9,
-    #         )
-    #         os.path.join('asdf', 'asdf')
-    #         '''
-    #     )
+            variant = 'asdf'
+            foo(
+                bar,
+                fizz,
+                thing=None,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')'''
+        )
 
-    #     self._compare(expected, code)
+        self._compare(expected, code)
 
-    # def test_no_match_002(self):
-    #     code = textwrap.dedent(
-    #         '''\
-    #         import os
+    def test_no_match_002(self):
+        '''Don't remove arguments if there are none to remove.'''
+        code = textwrap.dedent(
+            '''\
+            import os
 
-    #         def foo(bar, fizz, thing=None, another=8):
-    #             pass
+            def foo(bar, fizz, thing=None, another=8):
+                pass
 
-    #         variant = 'asdf'
-    #         foo(
-    #             bar,
-    #             fizz,
-    #             thing=None,
-    #             another=9,
-    #         )
-    #         | |
-    #         os.path.join('asdf', 'asdf')
-    #         '''
-    #     )
+            variant = 'asdf'
+            foo(
+                bar,
+                fizz,
+                thing=None,
+                another=9,
+            )
+            |a|
+            os.path.join('asdf', 'asdf')
+            '''
+        )
 
-    #     expected = textwrap.dedent(
-    #         '''\
-    #         import os
+        expected = textwrap.dedent(
+            '''\
+            import os
 
-    #         def foo(bar, fizz, thing=None, another=8):
-    #             pass
+            def foo(bar, fizz, thing=None, another=8):
+                pass
 
-    #         variant = 'asdf'
-    #         foo(
-    #             bar,
-    #             fizz,
-    #             thing=None,
-    #             another=9,
-    #         )
-    #         os.path.join('asdf', 'asdf')
-    #         '''
-    #     )
+            variant = 'asdf'
+            foo(
+                bar,
+                fizz,
+                thing=None,
+                another=9,
+            )
+            a
+            os.path.join('asdf', 'asdf')
+            '''
+        )
 
-    #     self._compare(expected, code)
-
-    # def test_no_match_002(self):
-    #     pass
+        self._compare(expected, code)
