@@ -9,6 +9,9 @@ import jedi_vim
 import jedi
 import vim
 
+# IMPORT LOCAL LIBRARIES
+from . import common
+
 
 def _get_default(text):
     '''Get the default value of some parameter.
@@ -150,12 +153,12 @@ def get_parameter_details(parameter, lines, name):
     argument = '{name}=${{{tabstop}:{default}}}'
 
     if vim.eval("get(g:, 'expander_use_local_variables', '1')") == '0':
-        return (argument, _get_default(parameter.description))
+        return (argument, common.get_default(parameter.description))
 
     default = get_default(
         lines,
         name=name,
-        fallback=_get_default(parameter.description),
+        fallback=common.get_default(parameter.description),
     )
     return (argument, default)
 
