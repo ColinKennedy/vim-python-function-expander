@@ -53,12 +53,12 @@ _FUNCTION_TEMPLATE = textwrap.dedent(
 # )
 
 
-def adjust_cursor(code, node, column):
+def adjust_cursor(code, row, column):
     # TODO : Audit if I can replace "split('\n')" with "splitlines()"
     lines = code.split('\n')
 
     # fromlineo is 1-based so convert it to 0-based by subtracting 1
-    row = node.fromlineno - 1
+    row -= 1
 
     call_line = lines[row]
     try:
@@ -95,7 +95,7 @@ def get_trimmed_keywords(code, row, column, adjust=True):
 
     # TODO : Once unittesting is complete, move this logic into vim_trimmer.py instead!!!!
     if adjust:
-        row, column = adjust_cursor(code, call, column)
+        row, column = adjust_cursor(code, row, column)
 
     # TODO : In the future, remove the `environment` keyword so that Jedi can
     #        run using Python 3.

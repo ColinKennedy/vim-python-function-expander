@@ -312,44 +312,44 @@ class RegexTrim(unittest.TestCase):
 
         self._compare(expected, code)
 
-    # def test_fringe_002(self):
-    #     '''Replace text even when the cursor is outside of the function.'''
-    #     code = textwrap.dedent(
-    #         '''\
-    #         import os
+    def test_fringe_002(self):
+        '''Replace text even when the cursor is outside of the function.'''
+        code = textwrap.dedent(
+            '''\
+            import os
 
-    #         def foo(bar, fizz, thing=None, another=8):
-    #             pass
+            def foo(bar, fizz, thing=None, another=8):
+                pass
 
-    #         variant = 'asdf'
-    #         foo|(|
-    #             bar,
-    #             fizz,
-    #             thing=None,
-    #             another=9,
-    #         )
-    #         os.path.join('asdf', 'asdf')
-    #         '''
-    #     )
+            variant = 'asdf'
+            foo|(|
+                bar,
+                fizz,
+                thing=None,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
 
-    #     expected = textwrap.dedent(
-    #         '''\
-    #         import os
+        expected = textwrap.dedent(
+            '''\
+            import os
 
-    #         def foo(bar, fizz, thing=None, another=8):
-    #             pass
+            def foo(bar, fizz, thing=None, another=8):
+                pass
 
-    #         variant = 'asdf'
-    #         foo(
-    #             bar,
-    #             fizz,
-    #             another=9,
-    #         )
-    #         os.path.join('asdf', 'asdf')
-    #         '''
-    #     )
+            variant = 'asdf'
+            foo(
+                bar,
+                fizz,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
 
-    #     self._compare(expected, code)
+        self._compare(expected, code)
 
     def test_fringe_003(self):
         '''Replace text even when the cursor is on the edge of a line.'''
