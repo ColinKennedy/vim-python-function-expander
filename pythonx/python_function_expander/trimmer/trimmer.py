@@ -90,61 +90,22 @@ def get_trimmed_keywords(code, row, column, adjust=True):
 
     cropped_code = '\n'.join(code.splitlines()[call.fromlineno - 1:call.tolineno + 1])
 
-    # TODO : Remove this old code, later
-    # def _get_code():
-    #     return cropped_code
-
-    # def replace(match):
-    #     def get_indent(text):
-    #         return text[:len(text) - len(text.lstrip())]
-
-    #     def find_line_index(code, marker):
-    #         lines = code.split('\n')
-    #         count = 0
-
-    #         for index, line in enumerate(lines):
-    #             for char in line:
-    #                 if count == marker:
-    #                     return index
-    #                 count += 1
-
-    #         return -1
-
-    #     code = _get_code()
-    #     lines = code.split('\n')
-    #     row = find_line_index(code, match.start())
-
-    #     try:
-    #         # print('asdfsd', lines)
-    #         return get_indent(lines[row + 1])
-    #     except IndexError:
-    #         return ''
-
-    #     return ''
-
-    # def replace(match):
-    #     print('t', match.group())
-    #     return ''
-
     for name, value in parser.get_unchanged_keywords(call, script):
         # Our regex from above consumes
         is_multiline = call.fromlineno != call.tolineno
         if is_multiline:
             expression = _FUNCTION_TEMPLATE.format(
-                keyword=name,
-                value=value,
+                keyword=re.escape(name),
+                value=re.escape(value),
             )
         else:
             expression = _SINGLE_LINE_TEMPLATE.format(
-                keyword=name,
-                value=value,
+                keyword=re.escape(name),
+                value=re.escape(value),
             )
 
         expression = re.compile(expression, re.VERBOSE | re.MULTILINE)
-
         cropped_code = expression.sub(r'\1\2', cropped_code)
-
-        # cropped_code = expression.sub(replace, cropped_code)
 
     lines = code.split('\n')
     lines[call.fromlineno - 1:call.tolineno + 1] = cropped_code.split('\n')
