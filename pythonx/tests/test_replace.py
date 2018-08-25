@@ -545,6 +545,482 @@ class RegexTrim(_Common):
         self._compare(expected, code)
 
 
+class AssignmentTrim(_Common):
+    def test_single_line_001(self):
+        '''Remove unused arguments even if the cursor isn't directly on one.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            thing = foo(bar, |f|izz, thing=None, another=9)
+
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            thing = foo(bar, fizz, another=9)
+
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+    def test_single_line_002(self):
+        '''Remove unused arguments even if the cursor isn't directly on one.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            stuff('asfd')
+            obj = foo(bar, |f|izz, thing=None, another=9)
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            stuff('asfd')
+            obj = foo(bar, fizz, another=9)
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+    def test_single_line_003(self):
+        '''Remove unused arguments even when the cursor is on the start of the function.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            stuff('asfd')
+            obj = foo|(|bar, fizz, thing=None, another=9)
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            stuff('asfd')
+            obj = foo(bar, fizz, another=9)
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+    def test_single_line_004(self):
+        '''Remove unused arguments even when the cursor is not in the function.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            stuff('asfd')
+            obj = f|o|o(bar, fizz, thing=None, another=9)
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            stuff('asfd')
+            obj = foo(bar, fizz, another=9)
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+    def test_multiline_001(self):
+        '''Test to make sure that the a basic trimmer function works.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            obj = foo(
+                b|a|r,
+                fizz,
+                thing=None,
+                another=9,
+            )
+
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            obj = foo(
+                bar,
+                fizz,
+                another=9,
+            )
+
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+    def test_multiline_002(self):
+        '''Remove unused arguments and preserve the user's whitespace.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            obj = foo(
+                bar,
+                    fizz,
+                    another=8,
+                        |t|hing='tt'
+            )
+
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            obj = foo(
+                bar,
+                    fizz,
+                        thing='tt'
+            )
+
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+    def test_multiline_003(self):
+        '''Test to make sure that the a basic trimmer function works.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            obj = foo(
+                b|a|r,
+                fizz,
+                thing=None,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            obj = foo(
+                bar,
+                fizz,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+    def test_fringe_001(self):
+        '''Replace text even when the cursor is outside of the function.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            obj = foo(
+                bar,
+                fizz,
+                thing=None,
+                another=9,
+            |)|
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            obj = foo(
+                bar,
+                fizz,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+    def test_fringe_002(self):
+        '''Replace text even when the cursor is outside of the function.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            obj = foo|(|
+                bar,
+                fizz,
+                thing=None,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            obj = foo(
+                bar,
+                fizz,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+    def test_fringe_003(self):
+        '''Replace text even when the cursor is on the edge of a line.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            obj = foo(
+                bar,
+                fizz,
+                thing=None|,|
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            obj = foo(
+                bar,
+                fizz,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+    def test_fringe_004(self):
+        '''Replace text even when the cursor is in whitespace.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            obj = foo(
+                bar,
+                fizz,
+            | |    thing=None,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            obj = foo(
+                bar,
+                fizz,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+    def test_no_match_001(self):
+        '''Don't remove arguments if there are none to remove.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            obj = foo(
+                bar,
+                fizz,
+                thing=None,
+                another=9,
+            )
+            os|.|path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            obj = foo(
+                bar,
+                fizz,
+                thing=None,
+                another=9,
+            )
+            os.path.join('asdf', 'asdf')'''
+        )
+
+        self._compare(expected, code)
+
+    def test_no_match_002(self):
+        '''Don't remove arguments if there are none to remove.'''
+        code = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            obj = foo(
+                bar,
+                fizz,
+                thing=None,
+                another=9,
+            )
+            |a|
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        expected = textwrap.dedent(
+            '''\
+            import os
+
+            def foo(bar, fizz, thing=None, another=8):
+                pass
+
+            variant = 'asdf'
+            obj = foo(
+                bar,
+                fizz,
+                thing=None,
+                another=9,
+            )
+            a
+            os.path.join('asdf', 'asdf')
+            '''
+        )
+
+        self._compare(expected, code)
+
+
 class FailedCases(_Common):
 
     '''A series of failures that came up in production.'''
