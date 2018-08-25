@@ -40,7 +40,7 @@ class CallVisitor(object):
         self.visit(node)
 
 
-def _get_tolineno(node, lines):
+def get_tolineno(node, lines):
     '''Find the 'tolineno' of an astroid node.
 
     I'm not sure if this is a bug but astroid doesn't properly give the line numbers
@@ -85,7 +85,7 @@ def _get_tolineno(node, lines):
     return -1
 
 
-def get_call(code, row):
+def get_nearest_call(code, row):
     '''Find the node in some code that is closest to the given row.
 
     Args:
@@ -102,7 +102,7 @@ def get_call(code, row):
 
     lines = code.split('\n')
 
-    get_real_tolineno = functools.partial(_get_tolineno, lines=lines)
+    get_real_tolineno = functools.partial(get_tolineno, lines=lines)
 
     for node in visitor.expressions:
         if isinstance(node, astroid.Call):
