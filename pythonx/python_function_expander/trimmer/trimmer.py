@@ -71,7 +71,7 @@ def get_trimmed_keywords(code, row, column, adjust=True):
         tuple[str, <astroid.Call> or NoneType]: The trimmed code.
 
     '''
-    call = parser.get_call(code, row)
+    call = parser.get_nearest_call(code, row)
 
     if not call:
         return (code, None)
