@@ -310,6 +310,10 @@ def expand_signatures(snip, force=False):
         clear_call_signatures(snip)
 
     script = jedi_vim.get_script()
+
+    if not script:
+        return
+
     signatures = script.call_signatures()
 
     if not signatures:
