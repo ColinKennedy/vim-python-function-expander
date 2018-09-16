@@ -68,7 +68,7 @@ def get_tolineno(node, lines):
              this function returns back -1, instead.
 
     '''
-    _LINE_ENDING = re.compile('\)(?:\s*#[\w\s]+)?$')
+    _LINE_ENDING = re.compile('\):*(?:\s*#[\w\s]*)?$')
     # tolineno is 1-based so subtract 1
     zeroed_lineno = node.tolineno - 1
 
