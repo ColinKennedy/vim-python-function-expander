@@ -5,8 +5,10 @@
 
 # IMPORT THIRD-PARTY LIBRARIES
 import functools
-import astroid
 import re
+
+# IMPORT THIRD-PARTY LIBRARIES
+import astroid
 
 # IMPORT LOCAL LIBRARIES
 from .. import common
