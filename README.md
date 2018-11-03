@@ -7,7 +7,7 @@ If so then vim-python-function-expander is here for you.
 
 First, write our your function/class/callable object, put your cursor inside
 of the `()`s, and press Tab. vim-python-function-expander will detect every
-argument inside of the `()`s and insert them as text, automatically.
+argument inside of the `()`s and insert them as text into your file, automatically.
 
 (|x| is the location of the cursor)
 
@@ -40,7 +40,7 @@ argparse.ArgumentParser(
 )
 ```
 
-vim-python-function-expander also integrates with
+vim-python-function-expander integrates with
 [UltiSnips](https://github.com/SirVer/ultisnips) so that you can jump from one
 argument to the next with a single keystroke. vim-python-function-expander will
 not only save you time but also prevent you from making mistakes and typos.
@@ -61,7 +61,7 @@ Also, vim-python-function-expander comes with an "auto-trimmer" mapping. See
 For vim-python-function-expander to work, several vim plugins and Python
 packages must be installed:
 
-- Vim must be compiled with Python 2 support.
+- Vim must be compiled with Python support.
 
 Vim Plugins:
 - [UltiSnips](https://github.com/SirVer/ultisnips)
@@ -102,7 +102,7 @@ can usually find the definition of your object and its call signature.
 
 vim-python-function-expander then takes jedi-vim's call signature, which
 could be `[foo, bar, bazz=8]` and then converts into an UltiSnips-friendly
-string like `"{1:foo}, {2:bar}, bazz{3:8}"`. That string gets sent to UltiSnips
+string like `"${1:foo}, ${2:bar}, bazz${3:8}"`. That string gets sent to UltiSnips
 [as an anonymous snippet](https://github.com/SirVer/ultisnips/blob/master/pythonx/UltiSnips/snippet_manager.py#L222).
 UltiSnips then "expands" the snippet at the cursor's position and voila,
 an automatic call signature is created.
@@ -141,9 +141,8 @@ argparse.ArgumentParser(
 
 What if you only wanted to fill out `description` and `usage`?
 
-vim-python-function-expander comes with a convenience mapping that detects the
-call signature of the callable object, checks to see which of the optional
-parameters you've filled out, and deletes any parameters that match your default.
+vim-python-function-expander comes with a mapping which can detect which of the
+optional parameters have been filled out and deletes the rest.
 
 ...It's easier to explain visually.
 
