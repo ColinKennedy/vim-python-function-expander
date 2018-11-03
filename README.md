@@ -194,4 +194,4 @@ workflow goes:
 |            Variable             | Default  |                                                     Description                                                      |
 |---------------------------------|----------|----------------------------------------------------------------------------------------------------------------------|
 | g:expander_use_local_variables  |       1  | This will try to fill in optional arguments in the expanded text with variables in the current scope. if they exist. |
-| g:expander_full_auto            |       0  | If "1" then python-function-expander will automatically expand the callable object for you                           |
+| g:expander_full_auto            |       0  | If "1" then vim-python-function-expander will automatically expand the callable object for you                       |
