@@ -45,9 +45,9 @@ vim-python-function-expander integrates with
 argument to the next with a single keystroke. vim-python-function-expander will
 not only save you time but also prevent you from making mistakes and typos.
 
-*As long as your Python file is able to be parsed, vim-python-function-expander
-will find the call signature*. That means you can use it on anything, not just
-the standard library.
+*As long as your Python file is able to be parsed and imported,
+vim-python-function-expander can find the call signature*. That means you can
+use it on anything, not just the standard library.
 
 Here's a recording of function expansion, in-action:
 
@@ -58,7 +58,7 @@ Also, vim-python-function-expander comes with an "auto-trimmer" mapping. See
 
 
 ## Requirements
-For vim-python-function-expander to work, several vim plugins and Python
+For vim-python-function-expander to work, several Vim plugins and Python
 packages must be installed:
 
 - Vim must be compiled with Python support.
@@ -87,7 +87,6 @@ Plug 'https://bitbucket.org/korinkite/python-function-expander.git'
 ```
 Then run `:PlugInstall` and restart Vim.
 
-
 Or install this repository manually by cloning it and copying each of its
 folder's contents to your `~/.vim` folder:
 
@@ -96,6 +95,8 @@ git clone https://github.com/ColinKennedy/vim-python-function-expander.git
 ```
 
 ## How Does It Work?
+vim-python-function-expander uses jedi-vim, UltiSnips, and astroid to work.
+
 [jedi-vim](https://github.com/davidhalter/jedi-vim) is a fantastic
 static-analysis library. As long your module's contents are importable, jedi
 can usually find the definition of your object and its call signature.
@@ -190,8 +191,82 @@ workflow goes:
 
 
 ## Configuration Settings
+vim-function-python-expander has a few options and mappings that you can
+customize.
+
+
+### auto-trimmer
+`<leader>sa` is assigned by default to trim parameters at the current line.
+To change it, add this to your `~/.vimrc`.
+
+```vim
+nmap <leader>ya <Plug>(trimmer-mapping)  " Where `<leader>ya` is the mapping you want
+```
+
+
+### Expansion Hotkey
+The [Tab] key is used to expand callable objects. That is because
+vim-python-function-expander uses UltiSnips. So if you want to change the
+expansion key to be something different, consider adding this to your `~/.vimrc`.
+
+```vim
+let g:UltiSnipsExpandTrigger = 't'  " The `t` key now expands. Default: '<tab>'
+```
+
+
+### Plugin Variables
 
 |            Variable             | Default  |                                                     Description                                                      |
 |---------------------------------|----------|----------------------------------------------------------------------------------------------------------------------|
 | g:expander_use_local_variables  |       1  | This will try to fill in optional arguments in the expanded text with variables in the current scope. if they exist. |
 | g:expander_full_auto            |       0  | If "1" then vim-python-function-expander will automatically expand the callable object for you                       |
+
+
+#### g:expander_use_local_variables
+The `g:expander_use_local_variables` is basically for convenience.
+
+Say you have a block of text like this:
+
+
+```python
+def some_function(text, items=None):
+    pass
+
+
+items = ['foo', 'bar']
+
+some_function(|x|)
+```
+
+Personally, if I write a variable to be the same name as a parameter of a
+function, it's because I want to use that variable in the function.
+
+So instead of `some_function(|x|)` expanding to `some_function(text, items=None)`,
+I'd rather it use `items=items`, instead.
+
+
+`let g:expander_use_local_variables = 0`:
+
+
+```python
+def some_function(text, items=None):
+    pass
+
+
+items = ['foo', 'bar']
+
+some_function(text, items=None)
+```
+
+`let g:expander_use_local_variables = 1`: (Default)
+
+
+```python
+def some_function(text, items=None):
+    pass
+
+
+items = ['foo', 'bar']
+
+some_function(text, items=items)
+```
