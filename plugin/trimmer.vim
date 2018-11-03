@@ -22,7 +22,7 @@ endif
 " TODO : Remove the reload statements, later
 "
 function! s:TrimUnchangedPythonParameters()
-python << EOF
+pythonx << EOF
 from python_function_expander.trimmer import parser
 from python_function_expander.trimmer import trimmer
 from python_function_expander.trimmer import vim_trimmer

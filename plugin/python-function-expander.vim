@@ -15,7 +15,7 @@ endif
 
 
 function! s:ExpandSignatures()
-python << EOF
+pythonx << EOF
 from python_function_expander import jedi_expander
 import UltiSnips
 import vim
