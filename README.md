@@ -45,13 +45,13 @@ vim-python-function-expander integrates with
 argument to the next with a single keystroke. vim-python-function-expander will
 not only save you time but also prevent you from making mistakes and typos.
 
-*As long as your Python file is able to be parsed and imported,
-vim-python-function-expander can find the call signature*. That means you can
+__As long as your Python file is able to be parsed and imported,
+vim-python-function-expander can find the call signature__. That means you can
 use it on anything, not just the standard library.
 
 Here's a recording of function expansion, in-action:
 
-https://asciinema.org/a/192301
+[![asciicast](https://asciinema.org/a/192301.svg)](https://asciinema.org/a/192301)
 
 Also, vim-python-function-expander comes with an "auto-trimmer" mapping. See
 the [Auto-Trimmer](#Auto-Trimmer) section for details.
@@ -65,8 +65,8 @@ packages must be installed:
 
 Vim Plugins:
 - [UltiSnips](https://github.com/SirVer/ultisnips)
- - Note: If you are using Vim with only Python 3 support enabled, you may need
-   to add `let g:UltiSnipsUsePythonVersion = 3` to your `.vimrc`.
+ - Note: If you use Vim with Python 3, you may need to add
+   `let g:UltiSnipsUsePythonVersion = 3` to your `.vimrc`.
 
 - [jedi-vim](https://github.com/davidhalter/jedi-vim)
 
@@ -161,7 +161,7 @@ argparse.ArgumentParser(
 
 Here's a quick demo of it in-action:
 
-https://asciinema.org/a/210165
+[![asciicast](https://asciinema.org/a/210165.svg)](https://asciinema.org/a/210165)
 
 The default mapping for the auto-trimmer is `<leader>ta`. Very typically, the
 workflow goes:
