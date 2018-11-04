@@ -179,6 +179,10 @@ argparse.ArgumentParser(
 )
 ```
 
+Here's a quick demo of it in-action:
+
+TODO: Add a demo
+
 The default mapping for the auto-trimmer is `<leader>ta`. Very typically, the
 workflow goes:
 
