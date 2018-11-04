@@ -14,30 +14,17 @@ argument inside of the `()`s and insert them as text into your file, automatical
 Before:
 
 ```python
-import argparse
+import re
 
-argparse.ArgumentParser(|x|)
+re.sub(|x|)
 ```
 
 After:
 
 ```python
-import argparse
+import re
 
-argparse.ArgumentParser(
-    prog=None,
-    usage=None,
-    description=None,
-    epilog=None,
-    version=None,
-    parents=[],
-    formatter_class=HelpFormatter,
-    prefix_chars='-',
-    fromfile_prefix_chars=None,
-    argument_default=None,
-    conflict_handler='error',
-    add_help=True,
-)
+re.sub(pattern, repl, string, count=0, flags=0)
 ```
 
 vim-python-function-expander integrates with
@@ -99,30 +86,17 @@ git clone https://github.com/ColinKennedy/vim-python-function-expander.git
 Automatic parameter expansion is nice but what if the call signature is huge?
 You'd end up wasting valuable time deleting the parameters that you didn't need.
 
-For example, with the argparse example:
+For example, with the re.sub example:
 
 ```python
-import argparse
+import re
 
-argparse.ArgumentParser(
-    prog=None,
-    usage='Some usage information',
-    description='My description here',
-    epilog=None,
-    version=None,|x|
-    parents=[],
-    formatter_class=HelpFormatter,
-    prefix_chars='-',
-    fromfile_prefix_chars=None,
-    argument_default=None,
-    conflict_handler='error',
-    add_help=True,
-)
+re.sub(pattern, repl, string, count=0, flags=re.VERBOSE)
 ```
 
-Only "usage" and "description" have non-default values. But
-vim-python-function-expander expands evey optional parameter. The auto-trimmer
-exists so that you can quickly delete the unchanged keyword parameters.
+Only "flags" has non-default values. But vim-python-function-expander expands
+evey optional parameter, includeing "count". The auto-trimmer exists so that
+you can quickly delete the unchanged keyword parameters.
 
 Before auto-trimmer (|x| is your cursor):
 
