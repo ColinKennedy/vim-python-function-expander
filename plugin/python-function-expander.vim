@@ -1,4 +1,4 @@
-if !has('python')
+if !has('pythonx')
     echoerr "vim-python-function-expander requires Python. Cannot continue loading this plugin"
     finish
 endif
