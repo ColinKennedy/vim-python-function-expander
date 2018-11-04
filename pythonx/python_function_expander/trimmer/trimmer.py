@@ -3,37 +3,12 @@
 
 '''The main module that trims arguments out of function calls.'''
 
-# IMPORT STANDARD LIBRARIES
-import textwrap
-import re
-
 # IMPORT THIRD-PARTY LIBRARIES
+import astroid
 import jedi
 
 # IMPORT LOCAL LIBRARIES
 from . import parser
-
-
-# TODO : Combine the common parts of these two templates
-_SINGLE_LINE_TEMPLATE = textwrap.dedent(
-    '''
-    (?:[\ \t]*)
-    {keyword}\s*=\s*{value}\s*,([\ \t]*)?
-    (?:\#[\w\ \t]+)?  # An optional in-line user comment, if it exists
-    (\S*)
-    (?:\n)?
-    '''
-)
-_FUNCTION_TEMPLATE = textwrap.dedent(
-    '''
-    (?:[\ \t]*)
-    {keyword}\s*=\s*{value}\s*,([\ \t]*)?
-    (?:\#[\w\ \t]+)?  # An optional in-line user comment, if it exists
-    (\S*)
-    (?:\n)?
-    (\s)
-    '''
-)
 
 
 def adjust_cursor(code, row, column):
@@ -47,11 +22,11 @@ def adjust_cursor(code, row, column):
     try:
         column = max((call_line.index('(') + 1, column))
     except ValueError:
-        # TODO : Make a unittest for this case
         # If this happens, it's because the user wrote some really weird syntax, like:
+        #
         # >>> foo\
         # >>> (bar)
-        # TODO : finish this usage case
+        #
         pass
 
     # Set row back to 1-based
@@ -68,15 +43,14 @@ def get_trimmed_keywords(code, row, column, adjust=True):
         column (int): The 0-based index that represents the user's cursor, vertically.
 
     Returns:
-        tuple[str, <astroid.Call> or NoneType]: The trimmed code.
+        tuple[str, <astroid.node> or NoneType]: The trimmed code.
 
     '''
-    call = parser.get_nearest_call(code, row)
+    node = parser.get_nearest_call(code, row)
 
-    if not call:
+    if not node:
         return (code, None)
 
-    # TODO : Once unittesting is complete, move this logic into vim_trimmer.py instead!!!!
     if adjust:
         row, column = adjust_cursor(code, row, column)
 
@@ -88,26 +62,23 @@ def get_trimmed_keywords(code, row, column, adjust=True):
     if not script:
         return (code, None)
 
-    cropped_code = '\n'.join(code.splitlines()[call.fromlineno - 1:call.tolineno + 1])
+    cropped_code = '\n'.join(code.splitlines()[node.fromlineno - 1:node.tolineno + 1])
 
-    for name, value in parser.get_unchanged_keywords(call, script):
-        # Our regex from above consumes
-        is_multiline = call.fromlineno != call.tolineno
-        if is_multiline:
-            expression = _FUNCTION_TEMPLATE.format(
-                keyword=re.escape(name),
-                value=re.escape(value),
-            )
-        else:
-            expression = _SINGLE_LINE_TEMPLATE.format(
-                keyword=re.escape(name),
-                value=re.escape(value),
-            )
+    call = node
+    if isinstance(call.parent, astroid.Assign):
+        call = call.parent
 
-        expression = re.compile(expression, re.VERBOSE | re.MULTILINE)
-        cropped_code = expression.sub(r'\1\2', cropped_code)
+    is_multiline = node.fromlineno != node.tolineno
 
+    if is_multiline:
+        visitor = MultiLineParameterExcluder()
+    else:
+        visitor = SingleLineParameterExcluder()
+
+    unchanged_keywords = parser.get_unchanged_keywords(node, script)
+
+    cropped_code = visitor.as_string()
     lines = code.split('\n')
-    lines[call.fromlineno - 1:call.tolineno + 1] = cropped_code.split('\n')
+    lines[node.fromlineno - 1:node.tolineno + 1] = cropped_code.split('\n')
 
-    return ('\n'.join(lines), call)
+    return ('\n'.join(lines), node)

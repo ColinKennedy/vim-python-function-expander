@@ -132,7 +132,6 @@ def get_parameter_info(script):
         dict[str, str]: The keywords and their defined default values.
 
     '''
-    # TODO : This needs to be chosen somehow
     try:
         signature = script.call_signatures()[0]
     except IndexError:
