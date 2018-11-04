@@ -54,7 +54,7 @@ Here's a recording of function expansion, in-action:
 https://asciinema.org/a/192301
 
 Also, vim-python-function-expander comes with an "auto-trimmer" mapping. See
-[Mappings And Options](#Mappings-And-Options) for details.
+the [Auto-Trimmer](#Auto-Trimmer) section for details.
 
 
 ## Requirements
@@ -94,28 +94,8 @@ folder's contents to your `~/.vim` folder:
 git clone https://github.com/ColinKennedy/vim-python-function-expander.git
 ```
 
-## How Does It Work?
-vim-python-function-expander uses jedi-vim, UltiSnips, and astroid to work.
 
-[jedi-vim](https://github.com/davidhalter/jedi-vim) is a fantastic
-static-analysis library. As long your module's contents are importable, jedi
-can usually find the definition of your object and its call signature.
-
-vim-python-function-expander then takes jedi-vim's call signature, which
-could be `[foo, bar, bazz=8]` and then converts into an UltiSnips-friendly
-string like `"${1:foo}, ${2:bar}, bazz${3:8}"`. That string gets sent to UltiSnips
-[as an anonymous snippet](https://github.com/SirVer/ultisnips/blob/master/pythonx/UltiSnips/snippet_manager.py#L222).
-UltiSnips then "expands" the snippet at the cursor's position and voila,
-an automatic call signature is created.
-
-[astroid](https://pypi.org/project/astroid/) is used if you have
-`g:expander_use_local_variables` set to `1`. It is what is used to check
-which variables you have already defined in your file and inserts them into the
-call signature. It also is responsible for trimming the expanded parameters.
-See [Mappings And Options](#Mappings-And-Options) for details about trimming.
-
-
-## Mappings And Options
+## Auto-Trimmer
 Automatic parameter expansion is nice but what if the call signature is huge?
 You'd end up wasting valuable time deleting the parameters that you didn't need.
 
@@ -281,3 +261,24 @@ Nice, right? If you name your variables based on the functions which will use
 them, then vim-python-function-expander will actually end up writing all of
 your parameters for you. Just expand, maybe trim it, and then move on
 to the next task.
+
+
+## How Does It Work?
+vim-python-function-expander uses jedi-vim, UltiSnips, and astroid to work.
+
+[jedi-vim](https://github.com/davidhalter/jedi-vim) is a fantastic
+static-analysis library. As long your module's contents are importable, jedi
+can usually find the definition of your object and its call signature.
+
+vim-python-function-expander then takes jedi-vim's call signature, which
+could be `[foo, bar, bazz=8]` and then converts into an UltiSnips-friendly
+string like `"${1:foo}, ${2:bar}, bazz${3:8}"`. That string gets sent to UltiSnips
+[as an anonymous snippet](https://github.com/SirVer/ultisnips/blob/master/pythonx/UltiSnips/snippet_manager.py#L222).
+UltiSnips then "expands" the snippet at the cursor's position and voila,
+an automatic call signature is created.
+
+[astroid](https://pypi.org/project/astroid/) is used if you have
+`g:expander_use_local_variables` set to `1`. It is what is used to check
+which variables you have already defined in your file and inserts them into the
+call signature. It also is responsible for trimming the expanded parameters.
+See [Auto-Trimmer](#Auto-Trimmer) for details about trimming.
