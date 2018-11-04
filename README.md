@@ -106,10 +106,10 @@ import argparse
 
 argparse.ArgumentParser(
     prog=None,
-    usage=None,
-    description=None,
+    usage='Some usage information',
+    description='My description here',
     epilog=None,
-    version=None,
+    version=None,|x|
     parents=[],
     formatter_class=HelpFormatter,
     prefix_chars='-',
@@ -120,12 +120,9 @@ argparse.ArgumentParser(
 )
 ```
 
-What if you only wanted to fill out `description` and `usage`?
-
-vim-python-function-expander comes with a mapping which can detect which of the
-optional parameters have not been changed from their default values and deletes them.
-
-...It's easier to explain visually.
+Only "usage" and "description" have non-default values. But
+vim-python-function-expander expands evey optional parameter. The auto-trimmer
+exists so that you can quickly delete the unchanged keyword parameters.
 
 Before auto-trimmer (|x| is your cursor):
 
