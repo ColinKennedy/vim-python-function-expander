@@ -70,7 +70,7 @@ Follow the installation instructions on each page before continuing.
 
 Example (Using [vim-plug](https://github.com/junegunn/vim-plug)):
 ```vim
-Plug 'https://bitbucket.org/korinkite/python-function-expander.git'
+Plug 'ColinKennedy/vim-python-function-expander'
 ```
 Then run `:PlugInstall` and restart Vim.
 
@@ -95,8 +95,8 @@ re.sub(pattern, repl, string, count=0, flags=re.VERBOSE)
 ```
 
 Only "flags" has non-default values. But vim-python-function-expander expands
-evey optional parameter, includeing "count". The auto-trimmer exists so that
-you can quickly delete the unchanged keyword parameters.
+"count" and "flags". If you had a function or class with 6+ keywords and you only needed 1, you'd probably want to delete the other 5.
+auto-trimmer can do this for you, automatically.
 
 Before auto-trimmer (|x| is your cursor):
 
