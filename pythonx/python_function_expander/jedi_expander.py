@@ -11,6 +11,7 @@ import vim
 
 # IMPORT LOCAL LIBRARIES
 from . import common
+from . import config
 
 
 def _get_default(text):
@@ -57,8 +58,7 @@ def join_columnwise(arguments):
         str: The joined text.
 
     '''
-    # TODO : Maybe take this indent from a global variable or something?
-    indent = '    '
+    indent = config.get_indent_preference()
     arguments = ['\n{indent}{argument},'.format(indent=indent, argument=argument)
                  for argument in arguments]
     return ''.join(arguments)
