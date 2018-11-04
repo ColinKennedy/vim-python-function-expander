@@ -234,7 +234,7 @@ can usually find the definition of your object and its call signature.
 
 vim-python-function-expander then takes jedi-vim's call signature, which
 could be `[foo, bar, bazz=8]` and then converts into an UltiSnips-friendly
-string like `"${1:foo}, ${2:bar}, bazz${3:8}"`. That string gets sent to UltiSnips
+string like `"${1:foo}, ${2:bar}, bazz=${3:8}"`. That string gets sent to UltiSnips
 [as an anonymous snippet](https://github.com/SirVer/ultisnips/blob/master/pythonx/UltiSnips/snippet_manager.py#L222).
 UltiSnips then "expands" the snippet at the cursor's position and voila,
 an automatic call signature is created.
