@@ -19,12 +19,15 @@ if !hasmapto('<Plug>(trimmer-mapping)')
 endif
 
 
-" TODO : Remove the reload statements, later
-"
+pythonx << EOF
+from python_function_expander import environment
+environment.init()
+EOF
+
+
 function! s:TrimUnchangedPythonParameters()
 pythonx << EOF
 from python_function_expander.trimmer import vim_trimmer
-
 vim_trimmer.trim_unchanged_arguments_in_buffer()
 EOF
 endfunction
