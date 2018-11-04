@@ -143,7 +143,7 @@ argparse.ArgumentParser(
 What if you only wanted to fill out `description` and `usage`?
 
 vim-python-function-expander comes with a mapping which can detect which of the
-optional parameters have been filled out and deletes the rest.
+optional parameters have not been changed from their default values and deletes them.
 
 ...It's easier to explain visually.
 
@@ -179,7 +179,7 @@ argparse.ArgumentParser(
 )
 ```
 
-The default mapping for the trimmer is `<leader>ta`. Very typically, the
+The default mapping for the auto-trimmer is `<leader>ta`. Very typically, the
 workflow goes:
 
 - Create the function call / callable object
@@ -196,7 +196,7 @@ customize.
 
 
 ### auto-trimmer
-`<leader>sa` is assigned by default to trim parameters at the current line.
+`<leader>ta` is assigned by default to trim parameters at the current line.
 To change it, add this to your `~/.vimrc`.
 
 ```vim
@@ -206,12 +206,14 @@ nmap <leader>ya <Plug>(trimmer-mapping)  " Where `<leader>ya` is the mapping you
 
 ### Expansion Hotkey
 The [Tab] key is used to expand callable objects. That is because
-vim-python-function-expander uses UltiSnips. So if you want to change the
-expansion key to be something different, consider adding this to your `~/.vimrc`.
+vim-python-function-expander uses UltiSnips for expansion. If you want to
+change the expansion key to be something different, consider adding
+this to your `~/.vimrc`.
 
 ```vim
 let g:UltiSnipsExpandTrigger = 't'  " The `t` key now expands. Default: '<tab>'
 ```
+Note: It's not recommended to change the trigger to "t". It's just an example.
 
 
 ### Plugin Variables
@@ -270,3 +272,8 @@ items = ['foo', 'bar']
 
 some_function(text, items=items)
 ```
+
+Nice, right? If you name your variables based on the functions which will use
+them, then vim-python-function-expander will actually end up writing all of
+your parameters for you. Just expand, maybe trim it, and then move on
+to the next task.
