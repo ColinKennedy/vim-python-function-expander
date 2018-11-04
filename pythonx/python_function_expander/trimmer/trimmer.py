@@ -152,10 +152,7 @@ def get_trimmed_keywords(code, row, column, adjust=True):
     if adjust:
         row, column = adjust_cursor(code, row, column)
 
-    # TODO : In the future, remove the `environment` keyword so that Jedi can
-    #        run using Python 3.
-    #
-    script = jedi.Script(code, row, column, environment=jedi.get_system_environment('2'))
+    script = jedi.Script(code, row, column)
 
     if not script:
         return (code, None)
