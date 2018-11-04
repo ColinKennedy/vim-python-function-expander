@@ -27,15 +27,6 @@ import re
 re.sub(pattern, repl, string, count=0, flags=0)
 ```
 
-vim-python-function-expander integrates with
-[UltiSnips](https://github.com/SirVer/ultisnips) so that you can jump from one
-argument to the next with a single keystroke. vim-python-function-expander will
-not only save you time but also prevent you from making mistakes and typos.
-
-__As long as your Python file is able to be parsed and imported,
-vim-python-function-expander can find the call signature__. That means you can
-use it on anything, not just the standard library.
-
 Here's a recording of function expansion, in-action:
 
 [![asciicast](https://asciinema.org/a/192301.svg)](https://asciinema.org/a/192301)
@@ -130,7 +121,7 @@ argparse.ArgumentParser(
 )
 ```
 
-Here's a quick demo of it in-action:
+Here's another quick demo:
 
 [![asciicast](https://asciinema.org/a/210165.svg)](https://asciinema.org/a/210165)
 
