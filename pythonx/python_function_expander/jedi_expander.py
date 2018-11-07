@@ -5,6 +5,7 @@
 
 # IMPORT THIRD-PARTY LIBRARIES
 from UltiSnips import snippet_manager
+import UltiSnips
 import jedi_vim
 import jedi
 import vim
@@ -339,3 +340,33 @@ def expand_signatures(snip, force=False):
         if snip:
             # Make sure the user's cursor doesn't move, even after expanding the snippet
             snip.cursor.preserve()
+
+
+def expand_signature_at_cursor():
+    '''Create an anonymous snippet at the current cursor location.'''
+    (row, column) = vim.current.window.cursor
+    current_line = vim.current.buffer[row - 1]
+    try:
+        previous_character = current_line[column - 1]
+    except IndexError:
+        previous_character = ''
+
+    needs_expansion = previous_character == '('
+    if needs_expansion:
+        vim.current.buffer[row - 1] += get_balanced_parenthesis()
+
+        # Note: I took this next section from <UltiSnips.snippet.definition._base.SnippetDefinition._eval_code>
+        current = vim.current
+
+        _locals = {
+            'window': current.window,
+            'buffer': current.buffer,
+            'line': current.window.cursor[0] - 1,
+            'column': current.window.cursor[1] - 1,
+            'cursor': UltiSnips.snippet.definition._base._SnippetUtilCursor(current.window.cursor),
+        }
+
+        snip = UltiSnips.text_objects._python_code.SnippetUtilForAction(_locals)
+
+        # Now actually do the expansion
+        expand_signatures(snip)

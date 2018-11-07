@@ -1,6 +1,16 @@
-if !has('pythonx')
+if !has('python') && !has('python3')
     echoerr "vim-python-function-expander requires Python. Cannot continue loading this plugin"
     finish
+endif
+
+
+" Get a Python version to run with (Vim 8.0+ can just use `pythonx`)
+if get(g:, 'expander_python_version', '2') == '2' && has('python')
+   let g:_uspy=":python "
+elseif get(g:, 'expander_python_version', '3') == '3' && has('python3')
+   let g:_uspy=":python3 "
+else
+    echoerr "No matching Python version could be found"
 endif
 
 
@@ -15,38 +25,9 @@ endif
 
 
 function! s:ExpandSignatures()
-pythonx << EOF
-from python_function_expander import jedi_expander
-import UltiSnips
-import vim
-
-(row, column) = vim.current.window.cursor
-current_line = vim.current.buffer[row - 1]
-try:
-    previous_character = current_line[column - 1]
-except IndexError:
-    previous_character = ''
-
-needs_expansion = previous_character == '('
-if needs_expansion:
-    vim.current.buffer[row - 1] += jedi_expander.get_balanced_parenthesis()
-
-    # Note: I took this next section from <UltiSnips.snippet.definition._base.SnippetDefinition._eval_code>
-    current = vim.current
-
-    _locals = {
-        'window': current.window,
-        'buffer': current.buffer,
-        'line': current.window.cursor[0] - 1,
-        'column': current.window.cursor[1] - 1,
-        'cursor': UltiSnips.snippet.definition._base._SnippetUtilCursor(current.window.cursor),
-    }
-
-    snip = UltiSnips.text_objects._python_code.SnippetUtilForAction(_locals)
-
-    # Now actually do the expansion
-    jedi_expander.expand_signatures(snip)
-EOF
+    "from python_function_expander import jedi_expander
+    "jedi_expander.expand_signature_at_cursor()"
+    execute g:_uspy "from python_function_expander import jedi_expander;jedi_expander.expand_signature_at_cursor()"
 endfunction
 
 
