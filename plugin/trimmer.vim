@@ -1,6 +1,16 @@
-if !has('pythonx')
+if !has('python') && !has('python3')
     echoerr "vim-python-function-expander requires Python. Cannot continue loading this plugin"
     finish
+endif
+
+
+" Get a Python version to run with (Vim 8.0+ can just use `pythonx`)
+if get(g:, 'expander_python_version', '2') == '2' && has('python')
+   let g:_uspy=":python "
+elseif get(g:, 'expander_python_version', '3') == '3' && has('python3')
+   let g:_uspy=":python3 "
+else
+    echoerr "No matching Python version could be found"
 endif
 
 
@@ -19,17 +29,15 @@ if !hasmapto('<Plug>(trimmer-mapping)')
 endif
 
 
-pythonx << EOF
-from python_function_expander import environment
-environment.init()
-EOF
+" from python_function_expander import environment
+" environment.init()
+execute g:_uspy "from python_function_expander import environment;environment.init()"
 
 
 function! s:TrimUnchangedPythonParameters()
-pythonx << EOF
-from python_function_expander.trimmer import vim_trimmer
-vim_trimmer.trim_unchanged_arguments_in_buffer()
-EOF
+    " from python_function_expander.trimmer import vim_trimmer
+    " vim_trimmer.trim_unchanged_arguments_in_buffer()
+    execute g:_uspy "from python_function_expander.trimmer import vim_trimmer;vim_trimmer.trim_unchanged_arguments_in_buffer()"
 endfunction
 
 
