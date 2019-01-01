@@ -3,16 +3,27 @@
 
 '''A module that generates UltiSnips arguments for callable objects on-the-fly.'''
 
+# IMPORT STANDARD LIBRARIES
+import re
+
 # IMPORT THIRD-PARTY LIBRARIES
 from UltiSnips import snippet_manager
 import UltiSnips
-import jedi_vim
+try:
+    import jedi_vim
+except ImportError:
+    is_jedi_vim_installed = False
+else:
+    is_jedi_vim_installed = True
 import jedi
 import vim
 
 # IMPORT LOCAL LIBRARIES
 from . import common
 from . import config
+
+
+CURRENT_ENVIRONMENT = (None, None)
 
 
 def _get_default(text):
@@ -28,6 +39,14 @@ def _get_default(text):
     '''
     index = text.index('=')
     return text[index + 1:]
+
+
+def enabled_signatures():
+    '''bool: If the user has jedi-vim installed with in-line signatures enabled.'''
+    try:
+        return vim.eval('g:jedi#show_call_signatures') == '1'
+    except Exception:
+        return False
 
 
 def needs_update(line, column):
@@ -230,8 +249,6 @@ def get_balanced_parenthesis():
 # @jedi_vim.catch_and_print_exceptions
 def clear_call_signatures(snip):
     '''Clear the current buffer of any Jedi-completion menus.'''
-    import re
-
     # Check if using command line call signatures
     if int(jedi_vim.vim_eval("g:jedi#show_call_signatures")) == 2:
         jedi_vim.vim_command('echo ""')
@@ -298,7 +315,7 @@ def expand_signatures(snip, force=False):
             will be "checked" to see if it needs expansion. Default is False.
 
     '''
-    if vim.eval('g:jedi#show_call_signatures') == '1':
+    if enabled_signatures() and is_jedi_vim_installed:
         # Jedi literally places text into a line in the current buffer to show
         # the user any completion options when the mode is set to 1.
         # If this completion-text is visible in Vim once `expand_signatures`
@@ -310,7 +327,7 @@ def expand_signatures(snip, force=False):
         #
         clear_call_signatures(snip)
 
-    script = jedi_vim.get_script()
+    script = get_script()
 
     if not script:
         return
@@ -370,3 +387,72 @@ def expand_signature_at_cursor():
 
         # Now actually do the expansion
         expand_signatures(snip)
+
+
+def get_environment(use_cache=True):
+    global CURRENT_ENVIRONMENT
+
+    try:
+        vim_force_python_version = vim.eval("g:jedi#force_py_version")
+    except Exception:
+            vim_force_python_version = ''
+
+    if use_cache and vim_force_python_version == CURRENT_ENVIRONMENT[0]:
+        return CURRENT_ENVIRONMENT[1]
+
+    environment = None
+    if vim_force_python_version == "auto":
+        environment = jedi.api.environment.get_cached_default_environment()
+    else:
+        force_python_version = vim_force_python_version
+        if '0000' in force_python_version or '9999' in force_python_version:
+            # It's probably a float that wasn't shortened.
+            try:
+                force_python_version = "{:.1f}".format(float(force_python_version))
+            except ValueError:
+                pass
+        elif isinstance(force_python_version, float):
+            force_python_version = "{:.1f}".format(force_python_version)
+
+        try:
+            environment = jedi.get_system_environment(force_python_version)
+        except jedi.InvalidPythonEnvironment as exc:
+            environment = jedi.api.environment.get_cached_default_environment()
+            echo_highlight(
+                "force_python_version=%s is not supported: %s - using %s." % (
+                    vim_force_python_version, str(exc), str(environment)))
+
+    CURRENT_ENVIRONMENT = (vim_force_python_version, environment)
+    return environment
+
+
+# Copied from jedi-vim
+# Reference: https://github.com/davidhalter/jedi-vim/blob/master/pythonx/jedi_vim.py
+#
+def get_script(source=None, column=None):
+    jedi.settings.additional_dynamic_modules = [
+        b.name for b in vim.buffers if (
+            b.name is not None and
+            b.name.endswith('.py') and
+            b.options['buflisted'])]
+
+    if source is None:
+        source = '\n'.join(vim.current.buffer)
+
+    if column is None:
+        column = vim.current.window.cursor[1]
+
+    row = vim.current.window.cursor[0]
+    buf_path = vim.current.buffer.name
+
+    try:
+        encoding = vim.eval('&encoding')
+    except Exception:
+        encoding = ''
+
+
+    return jedi.Script(
+        source, row, column, buf_path,
+        encoding=encoding or 'latin1',
+        environment=get_environment(),
+    )

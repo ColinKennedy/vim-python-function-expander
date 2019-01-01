@@ -46,7 +46,7 @@ Vim Plugins:
  - Note: If you use Vim with Python 3, you may need to add
    `let g:UltiSnipsUsePythonVersion = 3` to your `.vimrc`.
 
-- [jedi-vim](https://github.com/davidhalter/jedi-vim)
+- [jedi](https://github.com/davidhalter/jedi)
 
 Python Packages:
 - [astroid](https://pypi.org/project/astroid/)
@@ -226,13 +226,13 @@ to the next task.
 
 
 ## How Does It Work?
-vim-python-function-expander uses jedi-vim, UltiSnips, and astroid to work.
+vim-python-function-expander uses jedi, UltiSnips, and astroid to work.
 
-[jedi-vim](https://github.com/davidhalter/jedi-vim) is a fantastic
+[jedi](https://github.com/davidhalter/jedi) is a fantastic
 static-analysis library. As long your module's contents are importable, jedi
 can usually find the definition of your object and its call signature.
 
-vim-python-function-expander then takes jedi-vim's call signature, which
+vim-python-function-expander then takes jedi's call signature, which
 could be `[foo, bar, bazz=8]` and then converts into an UltiSnips-friendly
 string like `"${1:foo}, ${2:bar}, bazz=${3:8}"`. That string gets sent to UltiSnips
 [as an anonymous snippet](https://github.com/SirVer/ultisnips/blob/master/pythonx/UltiSnips/snippet_manager.py#L222).
