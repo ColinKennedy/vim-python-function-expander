@@ -101,7 +101,15 @@ def get_description_name(text):
     except ValueError:
         pass
 
-    return text.replace('param ', '')
+    text = text.replace('param ', '')  # Remove jedi completion text
+
+    # Jedi uses `typeshed`, which are .pyi stub files. Arguments get
+    # returned like this "args: _CMD". The left side of : is the
+    # variable name and the right is the type. We just need the name.
+    #
+    text = text.split(':')[0]
+
+    return text
 
 
 def get_default(lines, name, fallback=''):
@@ -170,17 +178,21 @@ def get_parameter_details(parameter, lines, name):
     if not is_optional(parameter.description):
         return ('${{{tabstop}:{name}}}', '')
 
+    # raise ValueError(sorted(dir(parameter)))
+    # raise ValueError(('asdfasd', parameter._name, parameter.defined_names, parameter.desc_with_module, parameter.description, parameter.docstring, parameter.full_name, parameter.infer_default, parameter.to_string))
+
     argument = '{name}=${{{tabstop}:{default}}}'
 
     if vim.eval("get(g:, 'expander_use_local_variables', '1')") == '0':
-        return (argument, common.get_default(parameter.description))
+        return (argument, common.get_default(parameter.description) or name)
 
     default = get_default(
         lines,
         name=name,
         fallback=common.get_default(parameter.description),
     )
-    return (argument, default)
+
+    return (argument, default or name)
 
 
 def get_parameter_snippet(parameters, lines=None):

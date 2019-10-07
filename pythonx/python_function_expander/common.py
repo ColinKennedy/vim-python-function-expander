@@ -20,4 +20,9 @@ def get_default(text):
     except ValueError:
         return ''
 
-    return text[index + 1:]
+    default = text[index + 1:]
+
+    if default == '...':  # `typeshed` frequently shows just a ... for default values.
+        return ''
+
+    return default
